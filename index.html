@@ -19,8 +19,8 @@
     --mint: #b7f0d1;
     --peach: #ffd8b8;
     --yellow: #fff1a6;
-    --text-dark: #4a4458;
-    --text-muted: #8b8499;
+    --text-dark: #000000;
+    --text-muted: #000000;
     --shadow: 0 10px 30px rgba(150, 120, 180, 0.15);
   }
 
@@ -48,27 +48,6 @@
     text-align: center;
   }
 
-  .balloon {
-    position: fixed;
-    font-size: 2.5rem;
-    opacity: 0.55;
-    animation: float 9s ease-in-out infinite;
-    pointer-events: none;
-    user-select: none;
-    z-index: 0;
-  }
-  .balloon.b1 { top: 10%; left: 8%; animation-delay: 0s; }
-  .balloon.b2 { top: 65%; left: 5%; animation-delay: 2s; font-size: 2rem; }
-  .balloon.b3 { top: 15%; right: 8%; animation-delay: 1s; }
-  .balloon.b4 { top: 70%; right: 10%; animation-delay: 3s; font-size: 2.2rem; }
-  .balloon.b5 { top: 40%; left: 3%; animation-delay: 4s; font-size: 1.6rem; }
-  .balloon.b6 { top: 45%; right: 4%; animation-delay: 1.5s; font-size: 1.6rem; }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(-3deg); }
-    50% { transform: translateY(-24px) rotate(3deg); }
-  }
-
   main {
     position: relative;
     z-index: 1;
@@ -80,10 +59,8 @@
     font-weight: 800;
     font-size: clamp(2rem, 6vw, 3.2rem);
     margin: 0 0 6px;
-    background: linear-gradient(90deg, #ff9ec4, #b39ddb, #90caf9);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    text-wrap: balance;
+    color: #000000;
   }
 
   .subtitle {
@@ -91,6 +68,7 @@
     color: var(--text-muted);
     margin: 0 0 36px;
     font-size: clamp(0.95rem, 2vw, 1.1rem);
+    text-wrap: balance;
   }
 
   .today {
@@ -103,6 +81,7 @@
     border-radius: 999px;
     margin-bottom: 32px;
     box-shadow: var(--shadow);
+    font-variant-numeric: tabular-nums;
   }
 
   .panels {
@@ -130,10 +109,8 @@
     font-weight: 600;
     font-size: 1.05rem;
     letter-spacing: 0.02em;
+    color: #000000;
   }
-
-  .panel.until h2 { color: #d16ba5; }
-  .panel.since h2 { color: #5b9bd5; }
 
   .stat-row {
     display: flex;
@@ -156,7 +133,8 @@
     font-weight: 700;
     font-size: clamp(1.6rem, 5vw, 2.3rem);
     line-height: 1;
-    color: #574f68;
+    color: #000000;
+    font-variant-numeric: tabular-nums;
   }
 
   .stat .label {
@@ -166,6 +144,36 @@
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
+  }
+
+  .progress-wrap {
+    margin: 0 auto 28px;
+    max-width: 520px;
+  }
+
+  .progress-track {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--card-bg);
+    box-shadow: var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.6);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--pink), var(--lavender), var(--blue));
+    transition: width 0.6s ease;
+  }
+
+  .progress-caption {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
   }
 
   .live-dot {
@@ -200,18 +208,17 @@
   }
 
   footer span {
-    color: #d16ba5;
+    color: #000000;
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot { animation: none; }
+    .progress-fill { transition: none; }
   }
 </style>
 </head>
 <body>
-
-<span class="balloon b1">🎈</span>
-<span class="balloon b2">🎂</span>
-<span class="balloon b3">🎉</span>
-<span class="balloon b4">🎈</span>
-<span class="balloon b5">🎁</span>
-<span class="balloon b6">✨</span>
 
 <main>
   <h1>Gideon's Birthday</h1>
@@ -219,9 +226,16 @@
 
   <div class="today" id="todayLine">Loading today's date…</div>
 
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-caption" id="progressCaption">– of the way from last birthday to next</div>
+  </div>
+
   <div class="panels">
     <section class="panel until">
-      <h2>⏳ Until 28th April</h2>
+      <h2>Until 28th April</h2>
       <div class="stat-row">
         <div class="stat days">
           <div class="value" id="untilDays">–</div>
@@ -235,7 +249,7 @@
     </section>
 
     <section class="panel since">
-      <h2>🎉 Since 28th April</h2>
+      <h2>Since 28th April</h2>
       <div class="stat-row">
         <div class="stat days">
           <div class="value" id="sinceDays">–</div>
@@ -251,7 +265,7 @@
 
   <div class="live-label"><span class="live-dot"></span>Updating live</div>
 
-  <footer>Counting the days to <span>28th April</span>, every year 🌷</footer>
+  <footer>Counting the days to <span>28th April</span>, every year</footer>
 </main>
 
 <script>
@@ -260,6 +274,8 @@
   const sinceDaysEl = document.getElementById('sinceDays');
   const sinceWeeksEl = document.getElementById('sinceWeeks');
   const todayLineEl = document.getElementById('todayLine');
+  const progressFillEl = document.getElementById('progressFill');
+  const progressCaptionEl = document.getElementById('progressCaption');
 
   const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -297,6 +313,11 @@
     todayLineEl.textContent = 'Today is ' + now.toLocaleDateString(undefined, {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+
+    const cycleLength = daysSince + daysUntil;
+    const percent = cycleLength > 0 ? Math.round((daysSince / cycleLength) * 100) : 0;
+    progressFillEl.style.width = percent + '%';
+    progressCaptionEl.textContent = percent + '% of the way from last birthday to next';
   }
 
   update();
