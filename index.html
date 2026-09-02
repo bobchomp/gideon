@@ -59,6 +59,7 @@
     font-weight: 800;
     font-size: clamp(2rem, 6vw, 3.2rem);
     margin: 0 0 6px;
+    text-wrap: balance;
     background: linear-gradient(90deg, #ff9ec4, #b39ddb, #90caf9);
     -webkit-background-clip: text;
     background-clip: text;
@@ -70,6 +71,7 @@
     color: var(--text-muted);
     margin: 0 0 36px;
     font-size: clamp(0.95rem, 2vw, 1.1rem);
+    text-wrap: balance;
   }
 
   .today {
@@ -82,6 +84,7 @@
     border-radius: 999px;
     margin-bottom: 32px;
     box-shadow: var(--shadow);
+    font-variant-numeric: tabular-nums;
   }
 
   .panels {
@@ -136,6 +139,7 @@
     font-size: clamp(1.6rem, 5vw, 2.3rem);
     line-height: 1;
     color: #574f68;
+    font-variant-numeric: tabular-nums;
   }
 
   .stat .label {
@@ -145,6 +149,36 @@
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
+  }
+
+  .progress-wrap {
+    margin: 0 auto 28px;
+    max-width: 520px;
+  }
+
+  .progress-track {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--card-bg);
+    box-shadow: var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.6);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--pink), var(--lavender), var(--blue));
+    transition: width 0.6s ease;
+  }
+
+  .progress-caption {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
   }
 
   .live-dot {
@@ -181,6 +215,11 @@
   footer span {
     color: #d16ba5;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot { animation: none; }
+    .progress-fill { transition: none; }
+  }
 </style>
 </head>
 <body>
@@ -190,6 +229,13 @@
   <p class="subtitle">A live countdown to (and count-up from) the 28th of April</p>
 
   <div class="today" id="todayLine">Loading today's date…</div>
+
+  <div class="progress-wrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-caption" id="progressCaption">– of the way from last birthday to next</div>
+  </div>
 
   <div class="panels">
     <section class="panel until">
@@ -232,6 +278,8 @@
   const sinceDaysEl = document.getElementById('sinceDays');
   const sinceWeeksEl = document.getElementById('sinceWeeks');
   const todayLineEl = document.getElementById('todayLine');
+  const progressFillEl = document.getElementById('progressFill');
+  const progressCaptionEl = document.getElementById('progressCaption');
 
   const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -269,6 +317,11 @@
     todayLineEl.textContent = 'Today is ' + now.toLocaleDateString(undefined, {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+
+    const cycleLength = daysSince + daysUntil;
+    const percent = cycleLength > 0 ? Math.round((daysSince / cycleLength) * 100) : 0;
+    progressFillEl.style.width = percent + '%';
+    progressCaptionEl.textContent = percent + '% of the way from last birthday to next';
   }
 
   update();
